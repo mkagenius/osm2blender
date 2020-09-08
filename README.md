@@ -11,7 +11,7 @@
 
 ### Render:
 
-[![arnold render](https://img.youtube.com/vi/3-XonH_mMiU/maxresdefault.jpg)](https://www.youtube.com/watch?v=3-XonH_mMiU)
+[![evee render](https://raw.githubusercontent.com/mkagenius/osm2blender/master/indiranagar_render.png)](https://www.youtube.com/watch?v=3-XonH_mMiU)
 
 #### Note: This is not a perfect script, but it gets something going.
 
