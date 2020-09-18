@@ -5,8 +5,8 @@ import random
 import xml.dom.minidom
 
 # replace filepath with the absolute path of the OSM file you have downloaded
-#filepath = "/Users/manish/Work/osm2maya/indiranagar.osm"
-doc = xml.dom.minidom.parse(filepath)
+doc = xml.dom.minidom.parse("/Users/manish/Work/osm2maya/indiranagar.osm")
+
 
 # building:levels
 
@@ -108,6 +108,7 @@ all_poly = []
 cnt = 0
 
 obs_list = []
+
 for lst in buildings_xy:
     cnt += 1
     tmp = []
@@ -136,14 +137,54 @@ for lst in buildings_xy:
     me = bpy.data.meshes.new("")
     bm.to_mesh(me)
     
-    ob = bpy.data.objects.new("Ob"+str(cnt), me)
+    ob = bpy.data.objects.new("Obz"+str(cnt), me)
     ob.modifiers.new("Solidify", type='SOLIDIFY')
     ob.modifiers["Solidify"].thickness = h/10
+
+	# [start] Adding Glow to each object created, comment it out if not needed    
+    matName = "Mater"+str(cnt)
+    skymaterial = bpy.data.materials.new(matName)
+    ob.active_material = skymaterial 
+    skymaterial.use_nodes = True
+    nodes = skymaterial.node_tree.nodes
+    nodes.clear()
+
+
+    # Create needed Nodes
+    nodeOut = nodes.new(type='ShaderNodeOutputMaterial')
+    nodeEmission = nodes.new(type='ShaderNodeEmission')
+    r = g = b = 0
+    if cnt % 3 == 0:
+        r = 1.0
+        g = 0
+        b = 0
+    elif cnt % 3 == 1:
+        r = 0
+        g = 0.5
+        b = 1
+    elif cnt % 3 == 2:
+        r = 0.5
+        g = 0
+        b = 0.5
+        
+    nodeEmission.inputs['Color'].default_value = (r,g,b,1)
+    nodeEmission.inputs['Strength'].default_value = 4
+    
+    # Link them together
+    links = skymaterial.node_tree.links
+    linkOut = links.new(nodeEmission.outputs[0], nodeOut.inputs[0])
+
+    # [end] of Adding Glow to each objct created
+
     copy = ob.copy()
     obs_list.append(copy)
+    print("Done", cnt)
+#    if cnt > 7000:
+#        break
     
 cnt = 1
 for ob in obs_list:
     print("Linking ", cnt)
     cnt+=1
     bpy.context.scene.collection.objects.link(ob)
+
